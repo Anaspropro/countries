@@ -68,7 +68,7 @@ const CountriesList: React.FC = () => {
   }
 
   return (
-    <div className="px-8 py-28 md:px-12">
+    <div className="px-8 py-28 md:px-20">
       {/* Search and Filter Section */}
       <div className="flex mb-8 justify-between items-center">
         {/* Search Form */}
