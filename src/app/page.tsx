@@ -100,33 +100,41 @@ const CountriesList: React.FC = () => {
 
       {/* Countries Display */}
       <section className="grid md:grid-cols-3 gap-12">
-        {data.map((country) => (
-          <Link href={`/${country.cca3}`} key={country.cca3}>
-            <div>
-              <article className="rounded-lg shadow-black shadow overflow-hidden">
-                <Image
-                  src={country.flags.svg}
-                  alt={`${country.name.common} flag`}
-                  width={400}
-                  height={300}
-                  className="h-52 w-full object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-                <div className="p-5">
-                  <h1 className="text-2xl font-semibold my-4">
-                    {country.name.common}
-                  </h1>
-                  <ul className="flex flex-col justify-start items-start gap-2 text-sm">
-                    <li>Population: {country.population.toLocaleString()}</li>
-                    <li>Region: {country.region}</li>
-                    <li>Capital: {country.capital?.[0] || "N/A"}</li>
-                  </ul>
-                </div>
-              </article>
-            </div>
-          </Link>
-        ))}
+        {data.length > 0 ? (
+          data.map((country) => (
+            <Link href={`/${country.cca3}`} key={country.cca3}>
+              <div>
+                <article className="rounded-lg shadow-black shadow overflow-hidden">
+                  <Image
+                    src={country.flags.svg}
+                    alt={`${country.name.common} flag`}
+                    width={400}
+                    height={300}
+                    className="h-52 w-full object-cover"
+                    priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <div className="p-5">
+                    <h1 className="text-2xl font-semibold my-4">
+                      {country.name.common}
+                    </h1>
+                    <ul className="flex flex-col justify-start items-start gap-2 text-sm">
+                      <li>Population: {country.population.toLocaleString()}</li>
+                      <li>Region: {country.region}</li>
+                      <li>Capital: {country.capital?.[0] || "N/A"}</li>
+                    </ul>
+                  </div>
+                </article>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p className="text-center text-xl">
+            {search || region
+              ? "No countries found. Please adjust your filters."
+              : "Unable to fetch countries. Please try again later."}
+          </p>
+        )}
       </section>
     </div>
   );
