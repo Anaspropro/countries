@@ -68,7 +68,7 @@ const CountriesList: React.FC = () => {
   }
 
   return (
-    <div className="px-8 py-16 md:p-28">
+    <div className="px-8 py-28 md:px-12">
       {/* Search and Filter Section */}
       <div className="flex mb-8 justify-between items-center">
         {/* Search Form */}
@@ -99,7 +99,7 @@ const CountriesList: React.FC = () => {
       </div>
 
       {/* Countries Display */}
-      <section className="grid md:grid-cols-3 gap-14">
+      <section className="grid md:grid-cols-3 gap-12">
         {data.map((country) => (
           <Link href={`/${country.cca3}`} key={country.cca3}>
             <div>
