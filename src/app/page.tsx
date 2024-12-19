@@ -1,101 +1,135 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { FaSearch } from "react-icons/fa";
+import { useSearchParams } from "next/navigation";
+import Filter from "./components/fetch";
 
-export default function Home() {
+interface Country {
+  name: {
+    common: string;
+    official?: string;
+  };
+  cca3: string;
+  population: number;
+  capital: string[];
+  region: string;
+  flags: {
+    svg: string;
+  };
+}
+
+const fetchCountries = async (url: string): Promise<Country[]> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Network response not okay");
+  }
+  return response.json();
+};
+
+const CountriesList: React.FC = () => {
+  const searchParams = useSearchParams();
+
+  // Read `region` and `search` from query parameters
+  const region = searchParams.get("region") || "";
+  const search = searchParams.get("search") || "";
+
+  // Construct the URL dynamically based on the query parameters
+  const url = search
+    ? `https://restcountries.com/v3.1/name/${search}`
+    : region
+    ? `https://restcountries.com/v3.1/region/${region}`
+    : "https://restcountries.com/v3.1/all";
+
+  const { data, error, isLoading } = useQuery<Country[], Error>({
+    queryKey: ["countries", region, search],
+    queryFn: () => fetchCountries(url),
+    }
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!data) {
+    return (
+      <p className="text-center text-xl">
+        {search || region
+          ? "No countries found. Please adjust your filters."
+          : "Unable to fetch countries. Please try again later."}
+      </p>
+    );
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="px-8 py-16 md:p-28">
+      {/* Search and Filter Section */}
+      <div className="flex mb-8 justify-between items-center">
+        {/* Search Form */}
+        <form
+          action="/"
+          method="GET"
+          className="bg-[#2b3945] flex items-center w-96"
+        >
+          <button
+            type="submit"
+            className="text-xl px-2 text-white"
+            aria-label="Search"
+          >
+            <FaSearch />
+          </button>
+          <input
+            type="search"
+            name="search"
+            placeholder="Search country by name"
+            defaultValue={search}
+            className="p-3 w-full bg-[#2b3945] outline-none text-xl"
+            aria-label="Search for a country"
+          />
+        </form>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {/* Region Filter */}
+        <Filter currentRegion={region} />
+      </div>
+
+      {/* Countries Display */}
+      <section className="grid md:grid-cols-3 gap-14">
+        {data.map((country) => (
+          <Link href={`/${country.cca3}`} key={country.cca3}>
+            <div>
+              <article className="rounded-lg shadow-black shadow overflow-hidden">
+                <Image
+                  src={country.flags.svg}
+                  alt={`${country.name.common} flag`}
+                  width={400}
+                  height={300}
+                  className="h-52 w-full object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <div className="p-5">
+                  <h1 className="text-2xl font-semibold my-4">
+                    {country.name.common}
+                  </h1>
+                  <ul className="flex flex-col justify-start items-start gap-2 text-sm">
+                    <li>Population: {country.population.toLocaleString()}</li>
+                    <li>Region: {country.region}</li>
+                    <li>Capital: {country.capital?.[0] || "N/A"}</li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+          </Link>
+        ))}
+      </section>
     </div>
   );
-}
+};
+
+export default CountriesList;
