@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FaSearch } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 import Filter from "./components/fetch";
+import Loading from "./loading";
 
 interface Country {
   name: {
@@ -50,7 +51,7 @@ const CountriesList: React.FC = () => {
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div><Loading /></div>;
   }
 
   if (error) {
