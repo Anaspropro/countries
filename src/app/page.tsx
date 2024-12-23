@@ -7,6 +7,7 @@ import { FaSearch } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 import Filter from "./components/fetch";
 import Loading from "./loading";
+import axios from "axios";
 
 interface Country {
   name: {
@@ -23,11 +24,11 @@ interface Country {
 }
 
 const fetchCountries = async (url: string): Promise<Country[]> => {
-  const response = await fetch(url);
-  if (!response.ok) {
+  const response = await axios.get(url);
+  if (response.status !== 200) {
     throw new Error("Network response not okay");
   }
-  return response.json();
+  return response.data;
 };
 
 const CountriesList: React.FC = () => {
